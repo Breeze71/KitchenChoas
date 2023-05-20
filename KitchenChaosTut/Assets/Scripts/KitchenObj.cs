@@ -8,11 +8,12 @@ public class KitchenObj : MonoBehaviour
     private IKitchenObjParent kitchenObjParent;
 
     // 確認是拿到哪個 KitchenObj
-
     // 用 scriptable 存 name, prefabs
     // 生成 kitchenObj.prefabs
     // prefabs 有 return 能確定是哪個 scripatable
     // 即可確定當前生成物是番茄還是起司
+    /* 調用 return 回傳確認是哪個(Scriptable 只能存讀數據，不能 mono)
+        Debug.Log(kitchenObjTransform.GetComponent<KitchenObj>().GetKitchenObjSO());*/
     public KitchenObjSO GetKitchenObjSO()
     {
         return kitchenObjSO;
@@ -29,11 +30,6 @@ public class KitchenObj : MonoBehaviour
         // 再設定為　kitchenObjParent　觸發的為 Parent
         this.kitchenObjParent = kitchenObjParent;
 
-        if(kitchenObjParent.HasKitchenObj())
-        {
-            Debug.LogError("IKitchenObjParent already has a KitchObj");
-        }
-
         //　更換 Parent 持有的為 this
         kitchenObjParent.SetKitchenObj(this);
 
@@ -41,8 +37,23 @@ public class KitchenObj : MonoBehaviour
         transform.parent = kitchenObjParent.GetKitchenObjectFollowTransform();
         transform.localPosition = Vector3.zero;
     }
+    
     public IKitchenObjParent GetKitchenObjParent()
     {
         return kitchenObjParent;
+    }
+
+    public void DestroySelf()
+    {
+        Destroy(gameObject);
+    }
+
+    public static KitchenObj SpawnKitchObj(KitchenObjSO kitchenObjSO, IKitchenObjParent kitchenObjParent)
+    {
+        Transform kitchenObjTransform = Instantiate(kitchenObjSO.prefab);
+        KitchenObj kitchenObj = kitchenObjTransform.GetComponent<KitchenObj>();
+        kitchenObj.SetKitchenObjParent(kitchenObjParent);        
+
+        return kitchenObj;
     }
 }

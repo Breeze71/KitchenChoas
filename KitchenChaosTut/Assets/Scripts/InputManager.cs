@@ -6,6 +6,7 @@ public class InputManager : MonoBehaviour
     private PlayerInputAction playerInputAction;
 
     public event EventHandler OnInteraction;
+    public event EventHandler OnInteractAlternate;
 
     private void Awake() 
     {
@@ -14,6 +15,7 @@ public class InputManager : MonoBehaviour
 
         // Interact_Performed 鍵訂閱 Interact
         playerInputAction.Player.Interact.performed += Interact_Performed;
+        playerInputAction.Player.InteractAlternate.performed += InteractAlternate_Performed;
     }
 
     public Vector2 GetMovementInput()
@@ -31,5 +33,10 @@ public class InputManager : MonoBehaviour
             //OnInteraction(this, EventArgs.Empty);
 
         OnInteraction?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void InteractAlternate_Performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        OnInteractAlternate?.Invoke(this, EventArgs.Empty);
     }
 }
