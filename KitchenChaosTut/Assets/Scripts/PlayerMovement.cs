@@ -139,7 +139,7 @@ public class PlayerMovement : MonoBehaviour, IKitchenObjParent
             // move only on x
             if(canMove)
             {
-                Debug.Log("only x");
+                //Debug.Log("only x");
                 moveDirection = moveDirX;
             }
             
@@ -151,7 +151,7 @@ public class PlayerMovement : MonoBehaviour, IKitchenObjParent
                 // move only on z
                 if(canMove)
                 {
-                    Debug.Log("only z");
+                    //Debug.Log("only z");
                     moveDirection = moveDirZ;
                 }
             }

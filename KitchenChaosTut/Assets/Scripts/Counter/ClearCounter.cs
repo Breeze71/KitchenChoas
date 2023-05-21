@@ -20,7 +20,31 @@ public class ClearCounter : BaseCounter
         // 桌上有東西
         else
         {
-            if(!player.HasKitchenObj())
+            // player is holding plate
+            if(player.HasKitchenObj())
+            {
+                if(player.GetKitchenObj().TryGetPlate(out PlateKitchenObj plateKitchenObj))
+                {
+                    if(plateKitchenObj.TryAddIngredient(GetKitchenObj().GetKitchenObjSO()))
+                    {
+                        GetKitchenObj().DestroySelf();
+                    }
+                }
+                else
+                {
+                    // player is holding 食材
+                    if(GetKitchenObj().TryGetPlate(out plateKitchenObj))
+                    {
+                        if(plateKitchenObj.TryAddIngredient(player.GetKitchenObj().GetKitchenObjSO()))
+                        {
+                            player.GetKitchenObj().DestroySelf();
+                        }
+                    }
+                }
+            }
+
+            // hold nothing
+            else
             {
                 GetKitchenObj().SetKitchenObjParent(player);
             }

@@ -35,7 +35,19 @@ public class CuttingCounter : BaseCounter, IHasProgress
 
         else
         {
-            if(!player.HasKitchenObj())
+            if(player.HasKitchenObj())
+            {
+                if(player.GetKitchenObj().TryGetPlate(out PlateKitchenObj plateKitchenObj))
+                {
+                    if(plateKitchenObj.TryAddIngredient(GetKitchenObj().GetKitchenObjSO()))
+                    {
+                        GetKitchenObj().DestroySelf();
+                    }
+                }
+            }
+
+            // player
+            else
             {
                 GetKitchenObj().SetKitchenObjParent(player);
 
