@@ -1,7 +1,11 @@
 using UnityEngine;
+using System;
 
 public class BaseCounter : MonoBehaviour, IKitchenObjParent
 {
+    // drop sound
+    public static event EventHandler OnAnyObjDropSound;
+
     [SerializeField] private Transform counterTopPoint;
 
     private KitchenObj kitchenObj;
@@ -24,9 +28,16 @@ public class BaseCounter : MonoBehaviour, IKitchenObjParent
     {
         return counterTopPoint;
     }
+
     public void SetKitchenObj(KitchenObj kitchenObj)
     {
         this.kitchenObj = kitchenObj;
+
+        // 放到桌上時
+        if(kitchenObj != null)
+        {
+            OnAnyObjDropSound?.Invoke(this, EventArgs.Empty);
+        }
     }
     public KitchenObj GetKitchenObj()
     {

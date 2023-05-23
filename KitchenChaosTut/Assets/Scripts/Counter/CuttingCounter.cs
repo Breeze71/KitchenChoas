@@ -3,10 +3,13 @@ using System;
 
 public class CuttingCounter : BaseCounter, IHasProgress
 {
+    // sound event
+    public static event EventHandler OnAnyCutSound;
+
     /* Interface IHasProgress*/
     public event EventHandler<IHasProgress.OnProgressBarChangeEventArgs> OnProgressBarChange;
 
-    // Event
+    // visual Event
     public event EventHandler OnCut;
 
     [SerializeField] private CuttingRecipeSO[] cutKitchObjSOArray;
@@ -67,6 +70,7 @@ public class CuttingCounter : BaseCounter, IHasProgress
             // 取得每種 obj 的 maxCut
             cuttingProgress++;
             OnCut?.Invoke(this, EventArgs.Empty);
+            OnAnyCutSound?.Invoke(this, EventArgs.Empty);
 
             CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSOWithInput(GetKitchenObj().GetKitchenObjSO());
     

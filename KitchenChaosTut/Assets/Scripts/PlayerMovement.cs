@@ -6,15 +6,16 @@ public class PlayerMovement : MonoBehaviour, IKitchenObjParent
     public static PlayerMovement Instance{get; private set;}
     [SerializeField] private InputManager inputManager;
 
-    # region OnInteract Event
+    # region Event
     
-    public event EventHandler<OnSelectCounterChangedEventArgs> OnSelectCounterChanged;
-
     // 通過繼承 EventArgs 來傳遞數據(自定義的泛型委託)
+    public event EventHandler<OnSelectCounterChangedEventArgs> OnSelectCounterChanged;
     public class OnSelectCounterChangedEventArgs : EventArgs
     {
         public BaseCounter seletedCounter;
     }
+
+    public event EventHandler OnPickupSound;
 
     #endregion
 
@@ -196,6 +197,10 @@ public class PlayerMovement : MonoBehaviour, IKitchenObjParent
     public void SetKitchenObj(KitchenObj kitchenObj)
     {
         this.kitchenObj = kitchenObj;
+
+        // 手上有 kitchenObj
+        if(kitchenObj != null)
+            OnPickupSound?.Invoke(this, EventArgs.Empty);
     }
     public KitchenObj GetKitchenObj()
     {
