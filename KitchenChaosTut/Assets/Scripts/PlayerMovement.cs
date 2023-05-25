@@ -54,6 +54,9 @@ public class PlayerMovement : MonoBehaviour, IKitchenObjParent
     // Oninteract
     private void InputManager_OnInteraction(object sender, System.EventArgs e)
     {
+        // can't pick until gamePlaying
+        if(!GameManager.Instance.IsGamePlaying())   return;
+
         if(selectedCounter != null)
         {
             selectedCounter.Interact(this);
@@ -61,6 +64,8 @@ public class PlayerMovement : MonoBehaviour, IKitchenObjParent
     }
     private void InputManager_OnInteractAlternateAction(object sender, System.EventArgs e)
     {
+        if(!GameManager.Instance.IsGamePlaying())   return;
+
         if(selectedCounter != null)
         {
             selectedCounter.InteractAlternate(this);
@@ -187,7 +192,6 @@ public class PlayerMovement : MonoBehaviour, IKitchenObjParent
             seletedCounter = selectedCounter
         });
     }
-
 
     /* IKitchenObj Interface */
     public Transform GetKitchenObjectFollowTransform()

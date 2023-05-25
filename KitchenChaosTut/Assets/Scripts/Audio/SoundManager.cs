@@ -3,8 +3,18 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
+    public static SoundManager Instance
+    {
+        get;
+        private set;
+    }
+    
     [SerializeField] private AudioClipSO audioClipSO;
 
+    private void Awake() 
+    {
+        Instance = this;
+    }
     private void Start() 
     {
         DeliveryManager.Instance.OnRecipeSuccess += DeliveryManager_OnRecipeSuccessSound;
@@ -59,12 +69,18 @@ public class SoundManager : MonoBehaviour
 
 
     // play sound
-    private void PlaySound(AudioClip[] audioClipArray, Vector3 position, float volume = 1f)
+    private void PlaySound(AudioClip[] audioClipArray, Vector3 position, float volume = 1.5f)
     {
         PlaySound(audioClipArray[UnityEngine.Random.Range(0, audioClipArray.Length)], position, volume);
     }
-    private void PlaySound(AudioClip audioClip, Vector3 position, float volume = 1f)
+    private void PlaySound(AudioClip audioClip, Vector3 position, float volume = 1.5f)
     {
         AudioSource.PlayClipAtPoint(audioClip, position, volume);
+    }
+
+    // footStep
+    public void PlayFootstepSound(Vector3 position, float volume)
+    {
+        PlaySound(audioClipSO.footstep, position, volume);
     }
 }
