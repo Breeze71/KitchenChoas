@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
+    private const string PlayerRefsSoundEfxVolume = "SoundEffectsVolume";
+
     public static SoundManager Instance
     {
         get;
@@ -11,9 +13,14 @@ public class SoundManager : MonoBehaviour
     
     [SerializeField] private AudioClipSO audioClipSO;
 
+
+    private float volume = .3f;
+
     private void Awake() 
     {
         Instance = this;
+
+        volume = PlayerPrefs.GetFloat(PlayerRefsSoundEfxVolume, .3f);
     }
     private void Start() 
     {
@@ -67,20 +74,42 @@ public class SoundManager : MonoBehaviour
         PlaySound(audioClipSO.deliverySuccess, deliveryCounter.transform.position);
     }
 
-
     // play sound
-    private void PlaySound(AudioClip[] audioClipArray, Vector3 position, float volume = 1.5f)
+    private void PlaySound(AudioClip[] audioClipArray, Vector3 position, float volumeMultiplier = 1f)
     {
-        PlaySound(audioClipArray[UnityEngine.Random.Range(0, audioClipArray.Length)], position, volume);
+        PlaySound(audioClipArray[UnityEngine.Random.Range(0, audioClipArray.Length)], position, volume * volumeMultiplier);
     }
-    private void PlaySound(AudioClip audioClip, Vector3 position, float volume = 1.5f)
+    private void PlaySound(AudioClip audioClip, Vector3 position, float volumeMultiplier = 1f)
     {
-        AudioSource.PlayClipAtPoint(audioClip, position, volume);
+        AudioSource.PlayClipAtPoint(audioClip, position, volume * volumeMultiplier);
     }
 
-    // footStep
     public void PlayFootstepSound(Vector3 position, float volume)
     {
         PlaySound(audioClipSO.footstep, position, volume);
+    }
+    public void PlayCountDownSound()
+    {
+        PlaySound(audioClipSO.warning, Vector3.zero);
+    }
+    public void PlayWarningSound(Vector3 position)
+    {
+        PlaySound(audioClipSO.warning, position);
+    }
+
+    public void ChangeVolume()
+    {
+        volume +=.1f;
+
+        if(volume > 1f)
+            volume = 0f;
+
+        // 儲存音效大小
+        PlayerPrefs.SetFloat(PlayerRefsSoundEfxVolume, volume);
+        PlayerPrefs.Save();
+    }
+    public float GetVolume()
+    {
+        return volume;
     }
 }

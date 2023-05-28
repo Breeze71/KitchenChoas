@@ -5,6 +5,11 @@ public class BaseCounter : MonoBehaviour, IKitchenObjParent
 {
     // drop sound
     public static event EventHandler OnAnyObjDropSound;
+    public static void ResetStaticData()
+    {
+        // clear all the listener
+        OnAnyObjDropSound = null;
+    }
 
     [SerializeField] private Transform counterTopPoint;
 

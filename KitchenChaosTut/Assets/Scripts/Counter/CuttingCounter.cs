@@ -5,6 +5,12 @@ public class CuttingCounter : BaseCounter, IHasProgress
 {
     // sound event
     public static event EventHandler OnAnyCutSound;
+    new public static void ResetStaticData()
+    {
+        // clear all the listener of static event
+        OnAnyCutSound = null;
+    }
+
 
     /* Interface IHasProgress*/
     public event EventHandler<IHasProgress.OnProgressBarChangeEventArgs> OnProgressBarChange;

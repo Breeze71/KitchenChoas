@@ -9,8 +9,11 @@ public class GameManager : MonoBehaviour
         private set;
     }
 
+    #region event
     public event EventHandler OnGameStateChanged;
-
+    public event EventHandler OnGamePause;
+    public event EventHandler OnGameResume;
+    #endregion
     private enum GameState
     {
         waitingToStart,
@@ -21,12 +24,12 @@ public class GameManager : MonoBehaviour
 
     # region variable
     private GameState gameState;
-    private float waitingToStartTimer = 1f;
     private float countdownToStartTimer = 3f;
     private float gamePlayingTimer;
     [SerializeField] private float gamePlayingTimerMax = 15f;
     
     #endregion
+    private bool isPaused = false;
 
     private void Awake() 
     {
@@ -35,13 +38,33 @@ public class GameManager : MonoBehaviour
         gameState = GameState.waitingToStart;
     }
 
+    private void Start() 
+    {
+        InputManager.Instance.OnPauseAction += InputManager_OnPauseAction;
+        InputManager.Instance.OnInteraction += InputManager_OnInteraction;
+    }
+
+    // Tut UI Change
+    private void InputManager_OnInteraction(object sender, EventArgs e)
+    {
+        if(gameState == GameState.waitingToStart)
+        {
+            gameState = GameState.countdownToStart;
+        }
+
+        OnGameStateChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void InputManager_OnPauseAction(object sender, EventArgs e)
+    {
+        Pause_Resume();
+    }
+
     private void Update() 
     {
         switch(gameState)
         {
             case GameState.waitingToStart:
-                State_waitingToStart();
-                OnGameStateChanged?.Invoke(this, EventArgs.Empty);
                 break;
             
             case GameState.countdownToStart:
@@ -57,8 +80,6 @@ public class GameManager : MonoBehaviour
             case GameState.gameOver:
                 break;
         }
-
-        Debug.Log(gameState);
     }
 
     // return gameState
@@ -83,15 +104,23 @@ public class GameManager : MonoBehaviour
         return 1 - (gamePlayingTimer / gamePlayingTimerMax);
     }
 
-    private void State_waitingToStart()
+    public void Pause_Resume()
     {
-        waitingToStartTimer -= Time.deltaTime;
-        if(waitingToStartTimer < 0f)
+        isPaused = !isPaused;
+        if(isPaused)
         {
-            gameState = GameState.countdownToStart;
-        }        
+            Time.timeScale = 0f;
+            OnGamePause?.Invoke(this, EventArgs.Empty);
+        }
+
+        else
+        {
+            Time.timeScale = 1f;
+            OnGameResume?.Invoke(this, EventArgs.Empty);
+        }
     }
 
+    // gameState Logic
     private void State_countDownToStart()
     {
         gamePlayingTimer = gamePlayingTimerMax;

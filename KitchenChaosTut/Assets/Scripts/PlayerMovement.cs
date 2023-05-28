@@ -140,8 +140,9 @@ public class PlayerMovement : MonoBehaviour, IKitchenObjParent
             // 這樣 private Vec3 moveDir 會是之前的數值，isWalking = moveDirection != Vector3.zero 即對著牆跑動畫
             // 且向上走時， canMove = false 
             */
-            canMove = moveDirection.x !=0  && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, detectLength , moveDirX, moveDistance);
-        
+            canMove = (moveDirection.x < -.5f || moveDirection.x > .5f)  && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, detectLength , moveDirX, moveDistance);
+            // (moveDirection.x < -.5f || moveDirection.x > .5f) 優化 controller 操作
+            
             // move only on x
             if(canMove)
             {
@@ -152,7 +153,7 @@ public class PlayerMovement : MonoBehaviour, IKitchenObjParent
             else
             {
                 Vector3 moveDirZ = new Vector3(0, 0, moveDirection.z);
-                canMove = moveDirection.z != 0 && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, detectLength , moveDirZ, moveDistance);
+                canMove = (moveDirection.z < -.5f || moveDirection.z > .5f) && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, detectLength , moveDirZ, moveDistance);
                 
                 // move only on z
                 if(canMove)

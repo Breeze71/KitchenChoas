@@ -65,7 +65,7 @@ public class StoveCounter : BaseCounter, IHasProgress
                 {
                     GetKitchenObj().DestroySelf();
                     KitchenObj.SpawnKitchObj(fryingFoodSO.output, this);
-                    Debug.Log("Fried");
+                    //Debug.Log("Fried");
 
                     burningTimer = 0f;
                     foodState = FoodState.Fried;
@@ -220,5 +220,10 @@ public class StoveCounter : BaseCounter, IHasProgress
             }
         }
         return null;        
+    }
+
+    public bool IsFried()
+    {
+        return foodState == FoodState.Fried;
     }
 }
