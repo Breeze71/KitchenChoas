@@ -11,7 +11,7 @@ public class SelectedCounter : MonoBehaviour
     private void Start() 
     {    
         // Player_OnSelectedCounterChanged 訂閱 OnSelectCounterChanged
-        PlayerMovement.Instance.OnSelectCounterChanged += Player_OnSelectedCounterChanged;
+        //PlayerMovement.Instance.OnSelectCounterChanged += Player_OnSelectedCounterChanged;
     }
     
     private void Player_OnSelectedCounterChanged(object sender, PlayerMovement.OnSelectCounterChangedEventArgs e)

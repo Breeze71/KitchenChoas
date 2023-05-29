@@ -29,7 +29,7 @@ public class SoundManager : MonoBehaviour
 
         CuttingCounter.OnAnyCutSound += CuttingCounter_OnAnyCutSound;    
 
-        PlayerMovement.Instance.OnPickupSound += Player_OnPickupSound;
+        //PlayerMovement.Instance.OnPickupSound += Player_OnPickupSound;
         
         BaseCounter.OnAnyObjDropSound += BaseCounter_OnAnyObjDropSound;
 
@@ -50,7 +50,7 @@ public class SoundManager : MonoBehaviour
 
     private void Player_OnPickupSound(object sender, EventArgs e)
     {
-        PlaySound(audioClipSO.objectPickup, PlayerMovement.Instance.transform.position);
+        //PlaySound(audioClipSO.objectPickup, PlayerMovement.Instance.transform.position);
     }
 
     private void CuttingCounter_OnAnyCutSound(object sender, EventArgs e)

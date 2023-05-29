@@ -24,9 +24,9 @@ public class GameManager : MonoBehaviour
 
     # region variable
     private GameState gameState;
-    private float countdownToStartTimer = 3f;
+    private float countdownToStartTimer = 1f;
     private float gamePlayingTimer;
-    [SerializeField] private float gamePlayingTimerMax = 15f;
+    private float gamePlayingTimerMax = 300f;
     
     #endregion
     private bool isPaused = false;
@@ -42,6 +42,10 @@ public class GameManager : MonoBehaviour
     {
         InputManager.Instance.OnPauseAction += InputManager_OnPauseAction;
         InputManager.Instance.OnInteraction += InputManager_OnInteraction;
+
+        /*   Debug Trigger Automatic   */
+        gameState = GameState.countdownToStart;
+        OnGameStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     // Tut UI Change
@@ -50,9 +54,8 @@ public class GameManager : MonoBehaviour
         if(gameState == GameState.waitingToStart)
         {
             gameState = GameState.countdownToStart;
+            OnGameStateChanged?.Invoke(this, EventArgs.Empty);
         }
-
-        OnGameStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void InputManager_OnPauseAction(object sender, EventArgs e)

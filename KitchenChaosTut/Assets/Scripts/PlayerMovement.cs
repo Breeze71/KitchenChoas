@@ -1,10 +1,10 @@
 using System;
 using UnityEngine;
+using Unity.Netcode;
 
-public class PlayerMovement : MonoBehaviour, IKitchenObjParent
+public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
 {
-    public static PlayerMovement Instance{get; private set;}
-    [SerializeField] private InputManager inputManager;
+    //public static PlayerMovement Instance{get; private set;}
 
     # region Event
     
@@ -38,17 +38,14 @@ public class PlayerMovement : MonoBehaviour, IKitchenObjParent
 
     private void Awake() 
     {
-        if(Instance != null)
-            Debug.LogError("more than one player");
-        
-        Instance = this;
+        //Instance = this;
     }
 
     private void Start() 
     {
         // InputManager_OnInteraction 訂閱 inputManager.OnInteraction
-        inputManager.OnInteraction += InputManager_OnInteraction;
-        inputManager.OnInteractAlternate += InputManager_OnInteractAlternateAction;
+        InputManager.Instance.OnInteraction += InputManager_OnInteraction;
+        InputManager.Instance.OnInteractAlternate += InputManager_OnInteractAlternateAction;
     }
 
     // Oninteract
@@ -74,6 +71,11 @@ public class PlayerMovement : MonoBehaviour, IKitchenObjParent
 
     private void Update()
     {
+        if(!IsOwner)
+        {
+            return;
+        }
+
         PlayerMove();
         PlayerInteraction();
     }
@@ -82,7 +84,7 @@ public class PlayerMovement : MonoBehaviour, IKitchenObjParent
     private void PlayerInteraction()
     {
         // Direction
-        Vector2 inputVector = inputManager.GetMovementInput();
+        Vector2 inputVector = InputManager.Instance.GetMovementInput();
         moveDirection = new Vector3(inputVector.x, 0f, inputVector.y);
         
         // 沒有鍵入時也能 interact
@@ -120,7 +122,7 @@ public class PlayerMovement : MonoBehaviour, IKitchenObjParent
     private void PlayerMove()
     {
         // Direction
-        Vector2 inputVector = inputManager.GetMovementInput();
+        Vector2 inputVector = InputManager.Instance.GetMovementInput();
         moveDirection = new Vector3(inputVector.x, 0f, inputVector.y);
         
         // Colision detect
