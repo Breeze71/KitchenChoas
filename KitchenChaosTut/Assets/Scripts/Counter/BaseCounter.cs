@@ -1,7 +1,8 @@
 using UnityEngine;
 using System;
+using Unity.Netcode;
 
-public class BaseCounter : MonoBehaviour, IKitchenObjParent
+public class BaseCounter : NetworkBehaviour, IKitchenObjParent
 {
     // drop sound
     public static event EventHandler OnAnyObjDropSound;
@@ -56,5 +57,8 @@ public class BaseCounter : MonoBehaviour, IKitchenObjParent
     {
         return kitchenObj != null;
     }
-
+    public NetworkObject GetNetworkObject()
+    {
+        return NetworkObject;
+    }
 }

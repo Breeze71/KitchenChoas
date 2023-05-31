@@ -4,7 +4,16 @@ using Unity.Netcode;
 
 public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
 {
-    //public static PlayerMovement Instance{get; private set;}
+    // 只能　Static 因為　Intance noreferences
+    public static event EventHandler OnAnyPlayerSpawned;
+    public static event EventHandler OnAnyPlayerPickedSomethingSound;
+    public static void ResetStaticData()
+    {
+        // clear all the listener
+        OnAnyPlayerSpawned = null;
+    }
+    
+    public static PlayerMovement LocalInstance{get; private set;}
 
     # region Event
     
@@ -36,16 +45,21 @@ public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
     private bool isWalking;
     #endregion
 
-    private void Awake() 
-    {
-        //Instance = this;
-    }
-
     private void Start() 
     {
-        // InputManager_OnInteraction 訂閱 inputManager.OnInteraction
         InputManager.Instance.OnInteraction += InputManager_OnInteraction;
         InputManager.Instance.OnInteractAlternate += InputManager_OnInteractAlternateAction;
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if(IsOwner)
+        {
+            LocalInstance = this;
+        }
+
+        // Static Event 每個玩家加入觸發一次
+        OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
     }
 
     // Oninteract
@@ -179,7 +193,10 @@ public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
 
         // Slerp 圓弧插值，連同向量角度一起
         float rotateSpeed = 10f;
-        transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
+        if(isWalking)
+        {
+            transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
+        }
     }
 
     public bool IsWalking()
@@ -208,6 +225,7 @@ public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
         // 手上有 kitchenObj
         if(kitchenObj != null)
             OnPickupSound?.Invoke(this, EventArgs.Empty);
+            OnAnyPlayerPickedSomethingSound?.Invoke(this, EventArgs.Empty);
     }
     public KitchenObj GetKitchenObj()
     {
@@ -220,5 +238,9 @@ public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
     public bool HasKitchenObj()
     {
         return kitchenObj != null;
+    }
+    public NetworkObject GetNetworkObject()
+    {
+        return NetworkObject;
     }
 }

@@ -1,11 +1,18 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class KitchenObj : MonoBehaviour
+public class KitchenObj : NetworkBehaviour
 {
     [SerializeField] private KitchenObjSO kitchenObjSO;
 
     // Interface
     private IKitchenObjParent kitchenObjParent;
+    private FollowTransform followTransform;
+
+    private void Awake() 
+    {
+        followTransform = GetComponent<FollowTransform>();    
+    }
 
     // 確認是拿到哪個 KitchenObj
     // 用 scriptable 存 name, prefabs
@@ -22,20 +29,38 @@ public class KitchenObj : MonoBehaviour
     // Set Parent
     public void SetKitchenObjParent(IKitchenObjParent kitchenObjParent)
     {
-        // 每次先重製　Parent
+        SetKitchenObjParentServerRpc(kitchenObjParent.GetNetworkObject());
+    }
+
+    /* Netcode */
+    [ServerRpc(RequireOwnership = false)]
+    private void SetKitchenObjParentServerRpc(NetworkObjectReference kitchenObjParentNetworkObjectReference)
+    {
+        SetKitchenObjParentClientRpc(kitchenObjParentNetworkObjectReference);
+    }
+    [ClientRpc]
+    private void SetKitchenObjParentClientRpc(NetworkObjectReference kitchenObjParentNetworkObjectReference)
+    {
+        // 取得 NetworkObject 中的 <IKitchenObjParent> (player)
+        kitchenObjParentNetworkObjectReference.TryGet(out NetworkObject kitchenObjParentNetworkObject);
+        IKitchenObjParent kitchenObjParent = kitchenObjParentNetworkObject.GetComponent<IKitchenObjParent>();
+
         if(this.kitchenObjParent != null)
         {
             this.kitchenObjParent.ClearKitchObj();
         }
-        // 再設定為　kitchenObjParent　觸發的為 Parent
+
         this.kitchenObjParent = kitchenObjParent;
 
-        //　更換 Parent 持有的為 this
+        if(kitchenObjParent.HasKitchenObj())
+        {
+            Debug.LogError("has another kobj");
+        }
+
         kitchenObjParent.SetKitchenObj(this);
 
-        // 隨 counterTop or HoldPoint 移動
-        transform.parent = kitchenObjParent.GetKitchenObjectFollowTransform();
-        transform.localPosition = Vector3.zero;
+        followTransform.SetTargetTransform(kitchenObjParent.GetKitchenObjectFollowTransform());
+        Debug.Log(kitchenObjParent);
     }
     
     public IKitchenObjParent GetKitchenObjParent()
@@ -64,12 +89,10 @@ public class KitchenObj : MonoBehaviour
         }
     }
 
-    public static KitchenObj SpawnKitchObj(KitchenObjSO kitchenObjSO, IKitchenObjParent kitchenObjParent)
+    /* Netcode */ 
+    public static void SpawnKitchObj(KitchenObjSO kitchenObjSO, IKitchenObjParent kitchenObjParent)
     {
-        Transform kitchenObjTransform = Instantiate(kitchenObjSO.prefab);
-        KitchenObj kitchenObj = kitchenObjTransform.GetComponent<KitchenObj>();
-        kitchenObj.SetKitchenObjParent(kitchenObjParent);        
-
-        return kitchenObj;
+        Debug.Log("spawn");
+        KitchenGameMultiplayer.Instance.SpawnKitchObj(kitchenObjSO, kitchenObjParent);
     }
 }

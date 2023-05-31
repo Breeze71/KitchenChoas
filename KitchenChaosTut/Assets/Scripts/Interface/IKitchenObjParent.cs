@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
 public interface IKitchenObjParent
 {
@@ -18,5 +19,8 @@ public interface IKitchenObjParent
 
     // 有無
     public bool HasKitchenObj();
+
+    // Get NetworkObj Component
+    public NetworkObject GetNetworkObject();
 
 }

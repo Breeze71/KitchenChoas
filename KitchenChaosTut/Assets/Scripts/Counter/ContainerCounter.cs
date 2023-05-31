@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
 
@@ -16,7 +14,7 @@ public class ContainerCounter : BaseCounter
         if(!player.HasKitchenObj())
         {
             KitchenObj.SpawnKitchObj(kitchenObjSO, player);
-            // Interact 時觸發
+
             OnPlayerGrabbedObj?.Invoke(this, EventArgs.Empty);
         }
     }
