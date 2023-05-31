@@ -9,8 +9,9 @@ public class KitchenObj : NetworkBehaviour
     private IKitchenObjParent kitchenObjParent;
     private FollowTransform followTransform;
 
-    private void Awake() 
+    protected virtual void Awake() 
     {
+        // plate kitchenObj
         followTransform = GetComponent<FollowTransform>();    
     }
 
@@ -26,13 +27,14 @@ public class KitchenObj : NetworkBehaviour
         return kitchenObjSO;
     }
 
-    // Set Parent
+    // Set Follow
     public void SetKitchenObjParent(IKitchenObjParent kitchenObjParent)
     {
         SetKitchenObjParentServerRpc(kitchenObjParent.GetNetworkObject());
     }
 
-    /* Netcode */
+    /* Netcode  Set Follow*/
+    #region Netcode
     [ServerRpc(RequireOwnership = false)]
     private void SetKitchenObjParentServerRpc(NetworkObjectReference kitchenObjParentNetworkObjectReference)
     {
@@ -60,9 +62,9 @@ public class KitchenObj : NetworkBehaviour
         kitchenObjParent.SetKitchenObj(this);
 
         followTransform.SetTargetTransform(kitchenObjParent.GetKitchenObjectFollowTransform());
-        Debug.Log(kitchenObjParent);
     }
-    
+    #endregion
+
     public IKitchenObjParent GetKitchenObjParent()
     {
         return kitchenObjParent;
@@ -71,6 +73,11 @@ public class KitchenObj : NetworkBehaviour
     public void DestroySelf()
     {
         Destroy(gameObject);
+    }
+
+    public void ClearKitchenObjOnParent()
+    {
+        kitchenObjParent.ClearKitchObj();       
     }
 
     public bool TryGetPlate(out PlateKitchenObj plateKitchenObj)
@@ -89,10 +96,14 @@ public class KitchenObj : NetworkBehaviour
         }
     }
 
-    /* Netcode */ 
+    /* Network obj */ 
     public static void SpawnKitchObj(KitchenObjSO kitchenObjSO, IKitchenObjParent kitchenObjParent)
     {
-        Debug.Log("spawn");
         KitchenGameMultiplayer.Instance.SpawnKitchObj(kitchenObjSO, kitchenObjParent);
     }
+    public static void DestroyKitchObj(KitchenObj kitchenObj)
+    {
+        KitchenGameMultiplayer.Instance.DestroyKitchObj(kitchenObj);
+    }
+        
 }

@@ -16,10 +16,10 @@ public class KitchenGameMultiplayer : NetworkBehaviour
         Instance = this;    
     }
 
-
+    #region Spawn
     public void SpawnKitchObj(KitchenObjSO kitchenObjSO, IKitchenObjParent kitchenObjParent)
     {
-        Debug.Log("spawn rpc");
+        //Debug.Log("spawn rpc");
         SpawnKitchenObjServerRpc(GettKitchenObjSOIndex(kitchenObjSO), kitchenObjParent.GetNetworkObject());
     }
     
@@ -42,16 +42,46 @@ public class KitchenGameMultiplayer : NetworkBehaviour
         
         kitchenObj.SetKitchenObjParent(kitchenObjParent);
     }
-
+    #endregion
 
     // 輸入的 KitchenObj 的 Index
-    private int GettKitchenObjSOIndex(KitchenObjSO kitchenObjSO)
+    public int GettKitchenObjSOIndex(KitchenObjSO kitchenObjSO)
     {
         return kitchenObjListSO.kitchenObjSOList.IndexOf(kitchenObjSO);
     }
     // 取得 Index 對應 KJ
-    private KitchenObjSO GettKitchenObjSOFromIndex(int kitchenObjSOIndex)
+    public KitchenObjSO GettKitchenObjSOFromIndex(int kitchenObjSOIndex)
     {
         return kitchenObjListSO.kitchenObjSOList[kitchenObjSOIndex];
     }
+
+
+    #region Destory
+    public void DestroyKitchObj(KitchenObj kitchenObj)
+    {
+        DestroyKitchObjServerRpc(kitchenObj.NetworkObject);
+    }
+
+    /* Netcode */
+    [ServerRpc(RequireOwnership = false)]
+    private void DestroyKitchObjServerRpc(NetworkObjectReference kitchenObjNetworkBehaviourReference)
+    {
+        kitchenObjNetworkBehaviourReference.TryGet(out NetworkObject kitchenObjNetworkObject);
+        KitchenObj kitchenObj = kitchenObjNetworkObject.GetComponent<KitchenObj>();
+
+        // clear parent then destory
+        ClearKitchenObjOnParentClientRpc(kitchenObjNetworkBehaviourReference);
+        kitchenObj.DestroySelf();   //only server can destory networkObject
+    }
+
+
+    [ClientRpc]
+    private void ClearKitchenObjOnParentClientRpc(NetworkObjectReference kitchenObjNetworkObjectReference)
+    {
+        kitchenObjNetworkObjectReference.TryGet(out NetworkObject kitchenObjNetworkObject);
+        KitchenObj kitchenObj = kitchenObjNetworkObject.GetComponent<KitchenObj>();
+
+        kitchenObj.ClearKitchenObjOnParent();
+    }
+    #endregion
 }

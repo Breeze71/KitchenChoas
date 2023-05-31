@@ -13,8 +13,9 @@ public class PlateKitchenObj : KitchenObj
     [SerializeField] private List<KitchenObjSO> validKitchenObjSOList;
     private List<KitchenObjSO> kitchenObjSOListOnPlate;
 
-    private void Awake() 
+    protected override void Awake() 
     {
+        base.Awake();   // 先運行 KitchenObj 的 followTransform
         kitchenObjSOListOnPlate = new List<KitchenObjSO>();
     }
     

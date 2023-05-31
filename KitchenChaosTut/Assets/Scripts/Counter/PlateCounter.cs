@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using Unity.Netcode;
 
 public class PlateCounter : BaseCounter
 {
@@ -15,6 +16,11 @@ public class PlateCounter : BaseCounter
 
     private void Update() 
     {
+        if(!IsServer)
+        {
+            return;
+        }
+
         spawnPlateTimer += Time.deltaTime;
         if(spawnPlateTimer > spawnPlateTimerMax)
         {
@@ -22,12 +28,24 @@ public class PlateCounter : BaseCounter
 
             if(GameManager.Instance.IsGamePlaying() && platesSpawnAmount < platesSpawnAmountMax)
             {
-                platesSpawnAmount++;
-
-                OnPlateSpawned?.Invoke(this, EventArgs.Empty);
+                spawnPlateServerRpc();
             }
         }
 
+    }
+
+    /* Netcode */
+    [ServerRpc]
+    private void spawnPlateServerRpc()
+    {
+        // 由 Server Broadcast。也只需 Server 計算盤子生成
+        spawnPlateClientRpc();
+    }
+    [ClientRpc]
+    private void spawnPlateClientRpc()
+    {
+        platesSpawnAmount++;
+        OnPlateSpawned?.Invoke(this, EventArgs.Empty); // Spawned Visual
     }
 
     public override void Interact(PlayerMovement player)
@@ -37,11 +55,25 @@ public class PlateCounter : BaseCounter
             // take the plate
             if(platesSpawnAmount > 0)
             {
-                platesSpawnAmount--;
+                KitchenObj.SpawnKitchObj(plateKitchenObjSO, player);    // already sync
 
-                KitchenObj.SpawnKitchObj(plateKitchenObjSO, player);
-                OnplateRemoved?.Invoke(this, EventArgs.Empty);
+                InteractLogicServerRpc();
             }
         }
     }
+
+    /* Netcode */
+    [ServerRpc(RequireOwnership = false)]
+    private void InteractLogicServerRpc()
+    {
+        InteractLogicClientRpc();
+    }
+    [ClientRpc]
+    private void InteractLogicClientRpc()
+    {
+        platesSpawnAmount--;
+
+        OnplateRemoved?.Invoke(this, EventArgs.Empty);  // Removed Visual
+    }
+
 }

@@ -21,7 +21,7 @@ public class DeliveryCounter : BaseCounter
             // judge
             DeliveryManager.Instance.DeliverRecipe(plateKitchenObj);
 
-            player.GetKitchenObj().DestroySelf();
+            KitchenObj.DestroyKitchObj(player.GetKitchenObj());
         }
     }
 }

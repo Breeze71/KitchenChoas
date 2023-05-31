@@ -17,7 +17,7 @@ public class ProgressBarUI : MonoBehaviour
         }
 
         // 只需開局訂閱
-        hasProgress.OnProgressBarChange += HasProgress_OnProgressBarChanged;
+        hasProgress.OnProgressBarChanged += HasProgress_OnProgressBarChanged;
 
         barImg.fillAmount = 0f;
 

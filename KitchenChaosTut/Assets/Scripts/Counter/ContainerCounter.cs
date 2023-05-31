@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using Unity.Netcode;
 
 public class ContainerCounter : BaseCounter
 {   
@@ -15,8 +16,19 @@ public class ContainerCounter : BaseCounter
         {
             KitchenObj.SpawnKitchObj(kitchenObjSO, player);
 
-            OnPlayerGrabbedObj?.Invoke(this, EventArgs.Empty);
+            InteractLogicServerRpc();
         }
     }
 
+    /* Netcode */
+    [ServerRpc(RequireOwnership = false)]
+    private void InteractLogicServerRpc()
+    {
+        InteractLogicClientRpc();
+    }
+    [ClientRpc]
+    private void InteractLogicClientRpc()
+    {
+        OnPlayerGrabbedObj?.Invoke(this, EventArgs.Empty);  // Grab Anim
+    }
 }

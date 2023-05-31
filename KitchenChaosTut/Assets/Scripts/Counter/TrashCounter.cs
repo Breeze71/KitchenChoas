@@ -1,4 +1,6 @@
 using System;
+using Unity.Netcode;
+
 
 public class TrashCounter : BaseCounter
 {
@@ -13,9 +15,21 @@ public class TrashCounter : BaseCounter
     {
         if(player.HasKitchenObj())
         {
-            player.GetKitchenObj().DestroySelf();
+            KitchenObj.DestroyKitchObj(player.GetKitchenObj());
 
-            OnAnyObjTrashedSound?.Invoke(this, EventArgs.Empty);
+            InteractLogicServerRpc();
         }
+    }
+
+    /* Netcode */
+    [ServerRpc(RequireOwnership = false)]
+    private void InteractLogicServerRpc()
+    {
+        InteractLogicClientRpc();
+    }
+    [ClientRpc]
+    private void InteractLogicClientRpc()
+    {
+        OnAnyObjTrashedSound?.Invoke(this, EventArgs.Empty);  // Destory Sound
     }
 }

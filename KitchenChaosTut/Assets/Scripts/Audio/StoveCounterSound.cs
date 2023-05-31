@@ -18,7 +18,7 @@ public class StoveCounterSound : MonoBehaviour
     {
         stoveCounter.OnFoodStateChanged += StoveCounter_OnFoodStateChanged;
         
-        stoveCounter.OnProgressBarChange += stoveCounter_OnProgressBarChange;
+        stoveCounter.OnProgressBarChanged += stoveCounter_OnProgressBarChange;
     }
 
     // warning Sound

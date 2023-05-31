@@ -649,6 +649,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8609154979958619585, guid: 673cee7c2ae4f294cb88a76192d9f87c,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 951099334
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -1015,7 +1020,6 @@ MonoBehaviour:
   visualGameObjArray:
   - {fileID: 4566815801177183591}
   - {fileID: 5107642067638724249}
-  - {fileID: 8792095049077166865}
   - {fileID: 1890007425197220024}
 --- !u!4 &5012350820206903005 stripped
 Transform:
@@ -1026,12 +1030,6 @@ Transform:
 --- !u!1 &5107642067638724249 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4386361873462607087, guid: 93af8b85a17635f40a5b76ed82a86c18,
-    type: 3}
-  m_PrefabInstance: {fileID: 8808620326821599862}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &8792095049077166865 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 17251720544094567, guid: 93af8b85a17635f40a5b76ed82a86c18,
     type: 3}
   m_PrefabInstance: {fileID: 8808620326821599862}
   m_PrefabAsset: {fileID: 0}

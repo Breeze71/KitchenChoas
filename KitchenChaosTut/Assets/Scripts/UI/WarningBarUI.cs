@@ -15,7 +15,7 @@ public class WarningBarUI : MonoBehaviour
     }
     private void Start() 
     {
-        stoveCounter.OnProgressBarChange += stoveCounter_OnProgressBarChange;
+        stoveCounter.OnProgressBarChanged += stoveCounter_OnProgressBarChange;
 
         anim.SetBool(IsFlashing, false);
     }
