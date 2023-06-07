@@ -48,7 +48,7 @@ public class PlateCounter : BaseCounter
         OnPlateSpawned?.Invoke(this, EventArgs.Empty); // Spawned Visual
     }
 
-    public override void Interact(PlayerMovement player)
+    public override void Interact(Player player)
     {
         if(!player.HasKitchenObj())
         {   

@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class PlayerSound : MonoBehaviour
 {
-    private PlayerMovement player;
+    private Player player;
     private float footstepTimer;
     private float footstepTimerMax = 0.1f;
 
     private void Awake() {
-        player = GetComponent<PlayerMovement>();
+        player = GetComponent<Player>();
     }
 
     private void Update() {

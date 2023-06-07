@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
+using Unity.Netcode;
 
 public static class Loader
 {
@@ -11,7 +12,9 @@ public static class Loader
     {
         MainMenu,
         LoadingScene,
-        GameScene
+        LobbyScene,
+        CharacterSelectScene,
+        GameScene,
     }
     private static void Update() 
     {
@@ -31,6 +34,12 @@ public static class Loader
 
         // loadong scene
         SceneManager.LoadScene(Scene.LoadingScene.ToString());
+    }
+
+    /* LoadScene Network */ 
+    public static void LoadSceneNetWork(Scene scene)
+    {
+        NetworkManager.Singleton.SceneManager.LoadScene(scene.ToString(), LoadSceneMode.Single);
     }
 
     public static float GetLoadingProgress()

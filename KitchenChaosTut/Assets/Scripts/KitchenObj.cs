@@ -70,7 +70,7 @@ public class KitchenObj : NetworkBehaviour
         return kitchenObjParent;
     }
 
-    public void DestroySelf()
+    public void DestroyKitchenObj()
     {
         Destroy(gameObject);
     }

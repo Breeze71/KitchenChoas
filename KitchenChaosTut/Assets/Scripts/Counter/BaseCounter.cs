@@ -19,11 +19,11 @@ public class BaseCounter : NetworkBehaviour, IKitchenObjParent
 
     // Containter , ClearCounter
     // Override Interact
-    public virtual void Interact(PlayerMovement player)
+    public virtual void Interact(Player player)
     {
         Debug.LogError("BaseCounter.Interact");
     }
-    public virtual void InteractAlternate(PlayerMovement player)
+    public virtual void InteractAlternate(Player player)
     {
         //Debug.LogError("BaseCounter.InteractAlternate");
     }    

@@ -5,7 +5,7 @@ public class ClearCounter : BaseCounter
     [SerializeField] private KitchenObjSO kitchenObjSO;
 
     /* Extend BaseCounter*/
-    public override void Interact(PlayerMovement player)
+    public override void Interact(Player player)
     {   
         // 桌上沒東西
         if(!HasKitchenObj())
@@ -20,24 +20,27 @@ public class ClearCounter : BaseCounter
         // 桌上有東西
         else
         {
-            // player is holding plate
+            // player is holding sth
             if(player.HasKitchenObj())
             {
+                // player is holding plate
                 if(player.GetKitchenObj().TryGetPlate(out PlateKitchenObj plateKitchenObj))
                 {
                     if(plateKitchenObj.TryAddIngredient(GetKitchenObj().GetKitchenObjSO()))
                     {
-                        GetKitchenObj().DestroySelf();
+                        KitchenObj.DestroyKitchObj(GetKitchenObj());
                     }
                 }
+
+                // player is holding KitchenObj
                 else
                 {
-                    // player is holding 食材
+                    // Counter have plate
                     if(GetKitchenObj().TryGetPlate(out plateKitchenObj))
                     {
                         if(plateKitchenObj.TryAddIngredient(player.GetKitchenObj().GetKitchenObjSO()))
                         {
-                            player.GetKitchenObj().DestroySelf();
+                            KitchenObj.DestroyKitchObj(player.GetKitchenObj());
                         }
                     }
                 }

@@ -121,7 +121,7 @@ public class OptionUI : MonoBehaviour
 
     private void Start() 
     {
-        GameManager.Instance.OnGameResume += GameManager_OnGameResume;
+        GameManager.Instance.OnLocalGameResume += GameManager_OnGameResume;
 
         UpdateVisual();
 

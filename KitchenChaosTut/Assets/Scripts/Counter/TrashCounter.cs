@@ -11,7 +11,7 @@ public class TrashCounter : BaseCounter
         OnAnyObjTrashedSound = null;
     }
 
-    public override void Interact(PlayerMovement player)
+    public override void Interact(Player player)
     {
         if(player.HasKitchenObj())
         {

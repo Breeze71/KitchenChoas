@@ -21,7 +21,7 @@ public class CuttingCounter : BaseCounter, IHasProgress
     [SerializeField] private CuttingRecipeSO[] cutKitchObjSOArray;
     private int cuttingProgress;
 
-    public override void Interact(PlayerMovement player)
+    public override void Interact(Player player)
     {
         // nothing on counter,  Player is carrying something
         if(!HasKitchenObj() && player.HasKitchenObj())
@@ -46,7 +46,7 @@ public class CuttingCounter : BaseCounter, IHasProgress
                 {
                     if(plateKitchenObj.TryAddIngredient(GetKitchenObj().GetKitchenObjSO()))
                     {
-                        GetKitchenObj().DestroySelf();
+                        KitchenObj.DestroyKitchObj(GetKitchenObj());
                     }
                 }
             }
@@ -85,7 +85,7 @@ public class CuttingCounter : BaseCounter, IHasProgress
     #endregion
 
 
-    public override void InteractAlternate(PlayerMovement player)
+    public override void InteractAlternate(Player player)
     {
         // has a kitchen obj, cut it    // 避免已經切好報錯
         if(HasKitchenObj() && HasRecipeWithInput(GetKitchenObj().GetKitchenObjSO()))

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Unity.Netcode;
 
 public class PlateKitchenObj : KitchenObj
 {
@@ -30,12 +31,7 @@ public class PlateKitchenObj : KitchenObj
 
         if(!kitchenObjSOListOnPlate.Contains(kitchenObjSO))
         {
-            kitchenObjSOListOnPlate.Add(kitchenObjSO);
-
-            // 傳遞被加入的食材是哪個
-            OnIngredientAdded?.Invoke(this, new OnIngredientAddedEventArgs{
-                kitchenObjSO = kitchenObjSO
-            });
+            AddIngredientToPlateServerRpc(KitchenGameMultiplayer.Instance.GettKitchenObjSOIndex(kitchenObjSO)); // 轉 int
 
             return true;
         }
@@ -44,6 +40,29 @@ public class PlateKitchenObj : KitchenObj
             return false;
         }
     }
+
+
+    /* Netcode */
+    #region Add Ingredient To The Plate
+    [ServerRpc(RequireOwnership = false)]   // 任何一個 Client 都有 ownerShip AddIngredient
+    private void AddIngredientToPlateServerRpc(int kitchenObjSOIndex)
+    {
+        AddIngredientToPlateClientRpc(kitchenObjSOIndex);
+    }
+    [ClientRpc]
+    private void AddIngredientToPlateClientRpc(int kitchenObjSOIndex)
+    {
+        KitchenObjSO kitchenObjSO = KitchenGameMultiplayer.Instance.GettKitchenObjSOFromIndex(kitchenObjSOIndex);
+
+        kitchenObjSOListOnPlate.Add(kitchenObjSO);
+
+        // 傳遞被加入的食材是哪個 update visual
+        OnIngredientAdded?.Invoke(this, new OnIngredientAddedEventArgs{
+            kitchenObjSO = kitchenObjSO
+        });
+    }
+    #endregion
+
 
     // 目前盤上有的食材
     public List<KitchenObjSO> GetKitchenObjSOListOnPlate()

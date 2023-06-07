@@ -9,7 +9,7 @@ public class ContainerCounter : BaseCounter
     [SerializeField] private KitchenObjSO kitchenObjSO;
 
     /* Extend BaseCounter*/
-    public override void Interact(PlayerMovement player)
+    public override void Interact(Player player)
     {   
         // 手上沒東西才能拿
         if(!player.HasKitchenObj())

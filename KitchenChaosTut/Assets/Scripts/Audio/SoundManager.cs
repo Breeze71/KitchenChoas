@@ -24,7 +24,7 @@ public class SoundManager : MonoBehaviour
     }
     private void Start() 
     {
-        PlayerMovement.OnAnyPlayerPickedSomethingSound += Player_OnPickupSound;
+        Player.OnAnyPlayerPickedSomethingSound += Player_OnPickupSound;
 
         DeliveryManager.Instance.OnRecipeSuccess += DeliveryManager_OnRecipeSuccessSound;
         DeliveryManager.Instance.OnRecipeFailed += DeliveryManager_OnRecipeFailedSound;
@@ -51,7 +51,7 @@ public class SoundManager : MonoBehaviour
 
     private void Player_OnPickupSound(object sender, EventArgs e)
     {
-        PlayerMovement player = sender as PlayerMovement;
+        Player player = sender as Player;
         PlaySound(audioClipSO.objectPickup, player.transform.position);
     }
 

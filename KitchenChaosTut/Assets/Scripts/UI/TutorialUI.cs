@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System;
 
 public class TutorialUI : MonoBehaviour
 {
+    # region UI property
     [SerializeField] private TextMeshProUGUI moveUpText;
     [SerializeField] private TextMeshProUGUI moveDownText;
     [SerializeField] private TextMeshProUGUI moveRightText;
@@ -17,22 +16,23 @@ public class TutorialUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gamePad_interactText;
     [SerializeField] private TextMeshProUGUI gamePad_cutText;
     [SerializeField] private TextMeshProUGUI gamePad_PauseText;
+    #endregion
 
     private void Start()
     {
         InputManager.Instance.OnRebindKey += InputManager_OnRebindKey;
-        
-        GameManager.Instance.OnGameStateChanged += GameManager_OnGameStateChanged; // 遊戲開始了
+        GameManager.Instance.OnLocalPlayerReadyChanged += GameManager_OnLocalPlayerReadyChanged;
         
         UpdateVisual();
         Show();
     }
 
-    // Hide UI while start countDown
-    private void GameManager_OnGameStateChanged(object sender, EventArgs e)
+    private void GameManager_OnLocalPlayerReadyChanged(object sender, EventArgs e)
     {
-        if(GameManager.Instance.IsCountdownToStartActive())
-        Hide();
+        if(GameManager.Instance.IsLocalPlayerReady())
+        {
+            Hide();
+        }
     }
 
     private void InputManager_OnRebindKey(object sender, EventArgs e)

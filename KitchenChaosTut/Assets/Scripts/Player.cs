@@ -1,8 +1,10 @@
 using System;
 using UnityEngine;
 using Unity.Netcode;
+using System.Collections;
+using System.Collections.Generic;
 
-public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
+public class Player : NetworkBehaviour, IKitchenObjParent
 {
     // 只能　Static 因為　Intance noreferences
     public static event EventHandler OnAnyPlayerSpawned;
@@ -13,7 +15,7 @@ public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
         OnAnyPlayerSpawned = null;
     }
     
-    public static PlayerMovement LocalInstance{get; private set;}
+    public static Player LocalInstance{get; private set;}
 
     # region Event
     
@@ -37,14 +39,17 @@ public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
 
     # region Move Properties
     [SerializeField] private float moveSpeed;
-    [SerializeField] private LayerMask counterLayer;
+    [SerializeField] private LayerMask counterLayerMask;
+    [SerializeField] private LayerMask collisionLayerMask;
     [SerializeField] private float interactRange;
+    [SerializeField] private List<Vector3> spawnPosList;
 
     private Vector3 moveDirection;
     private Vector3 lastMoveDirection;
     private bool isWalking;
     #endregion
 
+    # region OnNetworkSpawn(), Start()
     private void Start() 
     {
         InputManager.Instance.OnInteraction += InputManager_OnInteraction;
@@ -58,8 +63,27 @@ public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
             LocalInstance = this;
         }
 
+        // Spawn Point
+        transform.position = spawnPosList[(int)OwnerClientId];
+
         // Static Event 每個玩家加入觸發一次
         OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
+
+        // Handle Client Disconnect
+        if(IsServer)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+        }
+    }
+    #endregion
+
+    /* Netcode Handle Disconnect */
+    private void NetworkManager_OnClientDisconnectCallback(ulong clientId)
+    {
+        if(clientId == OwnerClientId && HasKitchenObj())
+        {
+            kitchenObj.DestroyKitchenObj();
+        }
     }
 
     // Oninteract
@@ -107,7 +131,7 @@ public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
             lastMoveDirection = moveDirection;
         }
 
-        if(Physics.Raycast(transform.position, lastMoveDirection, out RaycastHit raycastHit, interactRange, counterLayer))
+        if(Physics.Raycast(transform.position, lastMoveDirection, out RaycastHit raycastHit, interactRange, counterLayerMask))
         {   
             // has clearCounter
             if(raycastHit.transform.TryGetComponent(out BaseCounter baseCounter))
@@ -140,11 +164,11 @@ public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
         moveDirection = new Vector3(inputVector.x, 0f, inputVector.y);
         
         // Colision detect
-        float detectLength = 0.7f;
-        float playerHeight = 2f;
+        float playerRadius = 0.7f;
         float moveDistance =  moveSpeed * Time.deltaTime;
 
-        bool canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, detectLength , moveDirection, moveDistance);
+        bool canMove = !Physics.BoxCast(
+            transform.position, Vector3.one * playerRadius , moveDirection, Quaternion.identity, moveDistance, collisionLayerMask);
 
         if(!canMove)
         {
@@ -156,7 +180,8 @@ public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
             // 這樣 private Vec3 moveDir 會是之前的數值，isWalking = moveDirection != Vector3.zero 即對著牆跑動畫
             // 且向上走時， canMove = false 
             */
-            canMove = (moveDirection.x < -.5f || moveDirection.x > .5f)  && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, detectLength , moveDirX, moveDistance);
+            canMove = (moveDirection.x < -.5f || moveDirection.x > .5f)  && !Physics.BoxCast(
+                transform.position, Vector3.one * playerRadius, moveDirX, Quaternion.identity, moveDistance, collisionLayerMask);
             // (moveDirection.x < -.5f || moveDirection.x > .5f) 優化 controller 操作
             
             // move only on x
@@ -169,7 +194,8 @@ public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
             else
             {
                 Vector3 moveDirZ = new Vector3(0, 0, moveDirection.z);
-                canMove = (moveDirection.z < -.5f || moveDirection.z > .5f) && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, detectLength , moveDirZ, moveDistance);
+                canMove = (moveDirection.z < -.5f || moveDirection.z > .5f) && !Physics.BoxCast(
+                    transform.position, Vector3.one * playerRadius , moveDirZ, Quaternion.identity, moveDistance, collisionLayerMask);
                 
                 // move only on z
                 if(canMove)
@@ -188,13 +214,12 @@ public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
             transform.position += moveDirection * moveDistance;
         }
 
-        // isWalking
         isWalking = moveDirection != Vector3.zero;
 
-        // Slerp 圓弧插值，連同向量角度一起
         float rotateSpeed = 10f;
         if(isWalking)
         {
+            // Slerp 圓弧插值，連同向量角度一起
             transform.forward = Vector3.Slerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
         }
     }
@@ -214,6 +239,7 @@ public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
     }
 
     /* IKitchenObj Interface */
+    #region IKitchen Interface
     public Transform GetKitchenObjectFollowTransform()
     {
         return kitchenObjHoldPoint;
@@ -243,4 +269,5 @@ public class PlayerMovement : NetworkBehaviour, IKitchenObjParent
     {
         return NetworkObject;
     }
+    #endregion
 }

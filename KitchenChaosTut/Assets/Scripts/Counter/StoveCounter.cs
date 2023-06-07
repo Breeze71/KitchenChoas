@@ -142,7 +142,7 @@ public class StoveCounter : BaseCounter, IHasProgress
         }
     }
 
-    public override void Interact(PlayerMovement player)
+    public override void Interact(Player player)
     {
         // nothing on counter,  Player is carrying something
         if(!HasKitchenObj() && player.HasKitchenObj())
@@ -166,10 +166,10 @@ public class StoveCounter : BaseCounter, IHasProgress
             {
                 if(plateKitchenObj.TryAddIngredient(GetKitchenObj().GetKitchenObjSO()))
                 {
-                    GetKitchenObj().DestroySelf();
-
+                    KitchenObj.DestroyKitchObj(GetKitchenObj());
+                    
                     /* Only Server Can Change Network Variable */
-                    //SetStateIdleServerRpc();
+                    SetStateIdleServerRpc();
                 }
             }
 

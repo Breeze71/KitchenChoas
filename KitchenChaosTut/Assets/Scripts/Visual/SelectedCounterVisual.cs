@@ -8,28 +8,28 @@ public class SelectedCounterVisual : MonoBehaviour
 
     private void Start() 
     {
-        if(PlayerMovement.LocalInstance != null)
+        if(Player.LocalInstance != null)
         {
-            PlayerMovement.LocalInstance.OnSelectCounterChanged += Player_OnSelectedCounterChanged;
+            Player.LocalInstance.OnSelectCounterChanged += Player_OnSelectedCounterChanged;
         }
         else
         {
             // LocalInstace 設定好了
-            PlayerMovement.OnAnyPlayerSpawned += PlayerMovement_OnAnyPlayerSpawned;
+            Player.OnAnyPlayerSpawned += Player_OnAnyPlayerSpawned;
         }
     }
 
-    private void PlayerMovement_OnAnyPlayerSpawned(object sender, EventArgs e)
+    private void Player_OnAnyPlayerSpawned(object sender, EventArgs e)
     {
-        if(PlayerMovement.LocalInstance != null)
+        if(Player.LocalInstance != null)
         {
             // 避免多玩家加入重複邏輯
-            PlayerMovement.LocalInstance.OnSelectCounterChanged -= Player_OnSelectedCounterChanged;
-            PlayerMovement.LocalInstance.OnSelectCounterChanged += Player_OnSelectedCounterChanged;
+            Player.LocalInstance.OnSelectCounterChanged -= Player_OnSelectedCounterChanged;
+            Player.LocalInstance.OnSelectCounterChanged += Player_OnSelectedCounterChanged;
         }
     }
 
-    private void Player_OnSelectedCounterChanged(object sender, PlayerMovement.OnSelectCounterChangedEventArgs e)
+    private void Player_OnSelectedCounterChanged(object sender, Player.OnSelectCounterChangedEventArgs e)
     {
         // 觸發時傳遞數據
         if(e.seletedCounter == baseCounter)

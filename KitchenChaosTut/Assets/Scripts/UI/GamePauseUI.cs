@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.Netcode;
 
 public class GamePauseUI : MonoBehaviour
 {
@@ -16,6 +17,9 @@ public class GamePauseUI : MonoBehaviour
 
         mainMenuButton.onClick.AddListener(() =>
         {
+            // 中斷連接
+            NetworkManager.Singleton.Shutdown();
+
             Loader.LoadScene(Loader.Scene.MainMenu);
         });
 
@@ -30,24 +34,24 @@ public class GamePauseUI : MonoBehaviour
 
     private void Start() 
     {
-        GameManager.Instance.OnGamePause += GameManager_OnGamePause;
-        GameManager.Instance.OnGameResume += GameManager_OnGameResume;        
+        GameManager.Instance.OnLocalGamePause += GameManager_OnLocalGamePause;
+        GameManager.Instance.OnLocalGameResume += GameManager_OnLocalGameResume;        
         
         Hide();
     }
 
-    private void GameManager_OnGamePause(object sender, EventArgs e)
+    private void GameManager_OnLocalGamePause(object sender, EventArgs e)
     {
         Show();
     }
 
-    private void GameManager_OnGameResume(object sender, EventArgs e)
+    private void GameManager_OnLocalGameResume(object sender, EventArgs e)
     {
         Hide();
     }
 
 
-    public void Show()
+    private void Show()
     {
         gameObject.SetActive(true);
 
@@ -55,7 +59,7 @@ public class GamePauseUI : MonoBehaviour
         resumeButton.Select();
     }
 
-    public void Hide()
+    private void Hide()
     {
         gameObject.SetActive(false);        
     }

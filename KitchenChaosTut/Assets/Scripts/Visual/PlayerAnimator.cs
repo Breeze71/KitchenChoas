@@ -10,7 +10,7 @@ public class PlayerAnimator : NetworkBehaviour
 
 
     private Animator anim;
-    [SerializeField] private PlayerMovement playermovement;
+    [SerializeField] private Player player;
 
     private void Awake() 
     {
@@ -25,6 +25,6 @@ public class PlayerAnimator : NetworkBehaviour
             return;
         }
         
-        anim.SetBool(isWalking, playermovement.IsWalking());
+        anim.SetBool(isWalking, player.IsWalking());
     }
 }
