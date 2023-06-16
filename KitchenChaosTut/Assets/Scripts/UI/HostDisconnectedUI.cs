@@ -32,6 +32,11 @@ public class HostDisconnectedUI : MonoBehaviour
         }
     }
 
+    
+    private void OnDestroy() 
+    {
+        NetworkManager.Singleton.OnClientDisconnectCallback -= NetworkManager_OnClientDisconnectCallback;
+    }
     private void Show()
     {
         gameObject.SetActive(true);

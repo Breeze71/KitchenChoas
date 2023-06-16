@@ -1,7 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using Unity.Netcode;
+using System;
 
 public class CharacterSelectReady : NetworkBehaviour
 {
@@ -10,6 +9,9 @@ public class CharacterSelectReady : NetworkBehaviour
         get;
         private set;
     }
+
+    public event EventHandler OnClientReady;
+
     private Dictionary<ulong, bool> palyerReadyDictionary;
 
     private void Awake() 
@@ -19,7 +21,7 @@ public class CharacterSelectReady : NetworkBehaviour
         palyerReadyDictionary = new Dictionary<ulong, bool>();
     }
         
-    public void SetPlayerReady()
+    public void CheckPlayerReady()
     {
         SetPlayerReadyServerRpc();
     }
@@ -29,6 +31,7 @@ public class CharacterSelectReady : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SetPlayerReadyServerRpc(ServerRpcParams serverRpcParams = default)
     {
+        SetPlayerReadyClientRpc(serverRpcParams.Receive.SenderClientId);    // 同步 Client 顯示 Ready
         palyerReadyDictionary[serverRpcParams.Receive.SenderClientId] = true;
 
         bool isAllClientReady = true;
@@ -44,8 +47,24 @@ public class CharacterSelectReady : NetworkBehaviour
 
         if(isAllClientReady)
         {
+            GameLobby.Instance.DeleteLobby();   // 連上一致 Server 就不必 Lobby 了
+            
             Loader.LoadSceneNetWork(Loader.Scene.GameScene);
         }
     }
+
+    // 由於是 Rpc 傳遞的 Event 所以也會 Sync
+    [ClientRpc]
+    private void SetPlayerReadyClientRpc(ulong clientId)
+    {
+        palyerReadyDictionary[clientId] = true;
+
+        OnClientReady?.Invoke(this, EventArgs.Empty);
+    }
     #endregion
+
+    public bool IsPlayerReady(ulong clientId)
+    {
+        return palyerReadyDictionary.ContainsKey(clientId) && palyerReadyDictionary.ContainsKey(clientId);
+    }
 }

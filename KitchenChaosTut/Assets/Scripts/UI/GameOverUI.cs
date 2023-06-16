@@ -16,7 +16,7 @@ public class GameOverUI : MonoBehaviour
             // 中斷連接
             NetworkManager.Singleton.Shutdown();
 
-            Loader.LoadScene(Loader.Scene.MainMenu);
+            Loader.LoadScene(Loader.Scene.LobbyScene);
         });
     }
 

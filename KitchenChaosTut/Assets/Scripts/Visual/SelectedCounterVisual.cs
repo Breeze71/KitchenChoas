@@ -14,7 +14,7 @@ public class SelectedCounterVisual : MonoBehaviour
         }
         else
         {
-            // LocalInstace 設定好了
+            // LocalInstace 已經設定好了
             Player.OnAnyPlayerSpawned += Player_OnAnyPlayerSpawned;
         }
     }
@@ -49,7 +49,6 @@ public class SelectedCounterVisual : MonoBehaviour
             visualGameObj.SetActive(true);
         }
     }
-
     private void Hide()
     {
         foreach(GameObject visualGameObj in visualGameObjArray)

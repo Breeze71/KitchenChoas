@@ -1,21 +1,17 @@
 using System;
 using UnityEngine;
 using Unity.Netcode;
-using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 
 public class Player : NetworkBehaviour, IKitchenObjParent
 {
     // 只能　Static 因為　Intance noreferences
     public static event EventHandler OnAnyPlayerSpawned;
     public static event EventHandler OnAnyPlayerPickedSomethingSound;
-    public static void ResetStaticData()
-    {
-        // clear all the listener
-        OnAnyPlayerSpawned = null;
-    }
-    
+    public static void ResetStaticData(){ OnAnyPlayerSpawned = null;}
     public static Player LocalInstance{get; private set;}
+    
 
     # region Event
     
@@ -37,12 +33,19 @@ public class Player : NetworkBehaviour, IKitchenObjParent
     
     # endregion
 
-    # region Move Properties
+    # region Properties
+    [Header("Move Properties")]
     [SerializeField] private float moveSpeed;
+    [SerializeField] private float interactRange;
     [SerializeField] private LayerMask counterLayerMask;
     [SerializeField] private LayerMask collisionLayerMask;
-    [SerializeField] private float interactRange;
+
+    [Header("Spawn Point")]
     [SerializeField] private List<Vector3> spawnPosList;
+
+    [Header("Visual")]
+    [SerializeField] private PlayerVisual playerVisual; // visual
+    [SerializeField] private TextMeshPro playerName;
 
     private Vector3 moveDirection;
     private Vector3 lastMoveDirection;
@@ -54,6 +57,12 @@ public class Player : NetworkBehaviour, IKitchenObjParent
     {
         InputManager.Instance.OnInteraction += InputManager_OnInteraction;
         InputManager.Instance.OnInteractAlternate += InputManager_OnInteractAlternateAction;
+
+        // 當前　playerData // 和選擇的同一顏色
+        PlayerData playerdata = KitchenGameMultiplayer.Instance.GetPlayerData_From_ClientId(OwnerClientId);
+        playerVisual.SetPlayerColor(KitchenGameMultiplayer.Instance.GetPlayerIconColor(playerdata.colorId));
+
+        playerName.text = KitchenGameMultiplayer.Instance.GetPlayerName(OwnerClientId);
     }
 
     public override void OnNetworkSpawn()
@@ -64,7 +73,7 @@ public class Player : NetworkBehaviour, IKitchenObjParent
         }
 
         // Spawn Point
-        transform.position = spawnPosList[(int)OwnerClientId];
+        transform.position = spawnPosList[KitchenGameMultiplayer.Instance.GetPlayerDataIndex_From_ClientId(OwnerClientId)];
 
         // Static Event 每個玩家加入觸發一次
         OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
