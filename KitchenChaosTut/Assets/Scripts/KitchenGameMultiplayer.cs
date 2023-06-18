@@ -10,12 +10,7 @@ public class KitchenGameMultiplayer : NetworkBehaviour
     public const int Max_Player_Amount = 4;
     private const string PlayerPrefs_PlayerName_Multiplayer = "PlayerNameMultiplayer";
 
-    public static KitchenGameMultiplayer Instance
-    {
-        get;
-        private set;
-    }
-
+    public static KitchenGameMultiplayer Instance{ get; private set; }
     public event EventHandler OnTryingToJoin;
     public event EventHandler OnFailedToJoin;
     public event EventHandler OnPlayerDataNetworkListChanged;
@@ -293,17 +288,23 @@ public class KitchenGameMultiplayer : NetworkBehaviour
     {
         KitchenObjSO kitchenObjSO = GettKitchenObjSOFromIndex(kitchenObjSOIndex);
 
+        // Obj parent
+        kitchenObjParentNetworkObjectReference.TryGet(out NetworkObject kitchenObjParentNetworkObject);
+        IKitchenObjParent kitchenObjParent = kitchenObjParentNetworkObject.GetComponent<IKitchenObjParent>();
 
+        if(kitchenObjParent.HasKitchenObj())
+        {
+            // 避免卡比
+            return;
+        }
+
+        // Obj instantiate position
         Transform kitchenObjTransform = Instantiate(kitchenObjSO.prefab); 
         NetworkObject kitchenObjNetworkTransform = kitchenObjTransform.GetComponent<NetworkObject>();
         kitchenObjNetworkTransform.Spawn(true);
-
-
-        KitchenObj kitchenObj = kitchenObjTransform.GetComponent<KitchenObj>();
-
-        kitchenObjParentNetworkObjectReference.TryGet(out NetworkObject kitchenObjParentNetworkObject);
-        IKitchenObjParent kitchenObjParent = kitchenObjParentNetworkObject.GetComponent<IKitchenObjParent>();
         
+        // Set Parent
+        KitchenObj kitchenObj = kitchenObjTransform.GetComponent<KitchenObj>();
         kitchenObj.SetKitchenObjParent(kitchenObjParent);
     }
     #endregion -----
@@ -321,6 +322,13 @@ public class KitchenGameMultiplayer : NetworkBehaviour
     private void DestroyKitchObjServerRpc(NetworkObjectReference kitchenObjNetworkBehaviourReference)
     {
         kitchenObjNetworkBehaviourReference.TryGet(out NetworkObject kitchenObjNetworkObject);
+
+        if(kitchenObjNetworkObject == null)
+        {
+            // already destory 避免卡比造成 bug
+            return;
+        }
+
         KitchenObj kitchenObj = kitchenObjNetworkObject.GetComponent<KitchenObj>();
 
         // clear parent then destory

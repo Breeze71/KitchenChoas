@@ -102,7 +102,10 @@ public class CuttingCounter : BaseCounter, IHasProgress
     [ServerRpc(RequireOwnership = false)]
     private void CutObjServerRpc()
     {
-        CutObjClientRpc();
+        if(HasKitchenObj() && HasRecipeWithInput(GetKitchenObj().GetKitchenObjSO()))
+        {
+            CutObjClientRpc();
+        }
     }
     [ClientRpc]
     private void CutObjClientRpc()
@@ -124,18 +127,21 @@ public class CuttingCounter : BaseCounter, IHasProgress
     [ServerRpc(RequireOwnership = false)]
     private void TestCuttingProgressDoneServerRpc()
     {
-        CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSOWithInput(GetKitchenObj().GetKitchenObjSO());   // 切幾刀
-
-        // cutting
-        if(cuttingProgress >= cuttingRecipeSO.cuttingProgressMax)
+        if(HasKitchenObj() && HasRecipeWithInput(GetKitchenObj().GetKitchenObjSO()))    //避免延遲產生 bug
         {
-            // 確認其切片
-            KitchenObjSO outputKitchenObjSO = GetOutputForInput(GetKitchenObj().GetKitchenObjSO());
+            CuttingRecipeSO cuttingRecipeSO = GetCuttingRecipeSOWithInput(GetKitchenObj().GetKitchenObjSO());   // 切幾刀
 
-            KitchenObj.DestroyKitchObj(GetKitchenObj());
+            // cutting
+            if(cuttingProgress >= cuttingRecipeSO.cuttingProgressMax)
+            {
+                // 確認其切片
+                KitchenObjSO outputKitchenObjSO = GetOutputForInput(GetKitchenObj().GetKitchenObjSO());
 
-            // 產生切片
-            KitchenObj.SpawnKitchObj(outputKitchenObjSO, this);
+                KitchenObj.DestroyKitchObj(GetKitchenObj());
+
+                // 產生切片
+                KitchenObj.SpawnKitchObj(outputKitchenObjSO, this);
+            }
         }
     }
     #endregion
